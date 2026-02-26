@@ -84,7 +84,7 @@
     const val = document.getElementById('password').value;
     if (val === ADMIN_PASSWORD) {
       localStorage.setItem('nw-pw', ADMIN_PASSWORD);
-      window.location.replace('dashboard.html');
+      window.location.replace('/dashboard');
     } else {
       document.getElementById('error').textContent = 'Incorrect password.';
       document.getElementById('password').value = '';

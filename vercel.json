@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "headers": [
     {
-      "source": "/(.*).html",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -10,9 +10,5 @@
         }
       ]
     }
-  ],
-  "routes": [
-    { "src": "/admin", "dest": "/admin.html" },
-    { "src": "/dashboard", "dest": "/dashboard.html" }
   ]
 }
