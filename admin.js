@@ -105,8 +105,16 @@ function clearModal() {
   setAttachMode('link');
 }
 
-function openModal()  { document.getElementById('modal-overlay').hidden = false; document.getElementById('m-title').focus(); }
-function closeModal() { document.getElementById('modal-overlay').hidden = true; editingId = null; pendingFile = null; }
+function openModal() {
+  document.getElementById('modal-overlay').style.display = 'flex';
+  document.getElementById('m-title').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  editingId   = null;
+  pendingFile = null;
+}
 
 document.getElementById('modal-close-btn').addEventListener('click', closeModal);
 document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
