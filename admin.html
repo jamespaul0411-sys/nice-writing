@@ -7,220 +7,94 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="admin.css" />
+  <script src="config.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #f6f5f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border: 1px solid #e4e2dc;
+      padding: 2.5rem;
+      border-radius: 12px;
+    }
+    .logo { height: 28px; margin-bottom: 1.75rem; display: block; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; }
+    p { font-size: 0.88rem; color: #8a8880; margin-bottom: 1.75rem; }
+    label { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #555; margin-bottom: 0.4rem; }
+    input {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #e4e2dc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #0c0c0c; }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #0c0c0c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 0.25rem;
+    }
+    button:hover { background: #333; }
+    .error { font-size: 0.82rem; color: #c94040; min-height: 1.2rem; margin-bottom: 0.5rem; }
+  </style>
 </head>
 <body>
+  <div class="card">
+    <img src="assets/logo.png" alt="Nice Writing" class="logo" />
+    <h1>Admin Login</h1>
+    <p>Sign in to manage your portfolio.</p>
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="••••••••" />
+    <div class="error" id="error"></div>
+    <button id="login-btn">Sign In</button>
+  </div>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('dashboard').style.cssText = 'display:none!important;visibility:hidden';
-  });
-</script>
+    // If already logged in, go straight to dashboard
+    if (sessionStorage.getItem('nw-authed') === 'yes') {
+      window.location.replace('dashboard.html');
+    }
 
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen" style="display:flex">
-    <div class="login-card">
-      <img src="assets/logo.png" alt="Nice Writing" class="login-logo" />
-      <h1>Admin Login</h1>
-      <p class="login-sub">Sign in to manage your portfolio.</p>
-      
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" />
-      </div>
-      <p class="login-error" id="login-error"></p>
-      <button class="btn-primary" id="login-btn">Sign In</button>
-    </div>
-  </div>
+    function attempt() {
+      const val = document.getElementById('password').value;
+      if (val === ADMIN_PASSWORD) {
+        sessionStorage.setItem('nw-authed', 'yes');
+        window.location.replace('dashboard.html');
+      } else {
+        document.getElementById('error').textContent = 'Incorrect password.';
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    }
 
-  <!-- DASHBOARD -->
-<div id="dashboard" style="display:none" hidden>
-
-    <!-- Top bar -->
-    <header class="topbar">
-      <img src="assets/logo.png" alt="Nice Writing" class="topbar-logo" />
-      <nav class="tab-nav">
-        <button class="tab-btn active" data-tab="work">Work</button>
-        <button class="tab-btn" data-tab="about">About</button>
-        <button class="tab-btn" data-tab="hero">Homepage</button>
-        <button class="tab-btn" data-tab="contact">Contact</button>
-      </nav>
-      <button class="btn-ghost" id="logout-btn">Log out</button>
-    </header>
-
-    <!-- WORK TAB -->
-    <div class="tab-panel" id="tab-work">
-      <div class="panel-head">
-        <h2>Work</h2>
-        <button class="btn-primary" id="add-work-btn">+ Add Piece</button>
-      </div>
-      <div class="work-table" id="admin-work-list">
-        <div class="table-loading">Loading…</div>
-      </div>
-    </div>
-
-    <!-- ABOUT TAB -->
-    <div class="tab-panel hidden" id="tab-about">
-      <div class="panel-head"><h2>About</h2></div>
-      <div class="form-block">
-        <div class="field">
-          <label>Heading</label>
-          <input type="text" id="about-heading" placeholder="Writing that serves purpose." />
-        </div>
-        <div class="field">
-          <label>Bio — Paragraph 1</label>
-          <textarea id="about-p1" rows="3"></textarea>
-        </div>
-        <div class="field">
-          <label>Bio — Paragraph 2</label>
-          <textarea id="about-p2" rows="3"></textarea>
-        </div>
-        <div class="field">
-          <label>Bio — Paragraph 3 <span class="optional">(optional)</span></label>
-          <textarea id="about-p3" rows="3"></textarea>
-        </div>
-        <div class="field">
-          <label>Skills / Tags <span class="optional">(comma-separated)</span></label>
-          <input type="text" id="about-tags" placeholder="Annual Reports, Grant Narratives, Editing…" />
-        </div>
-        <button class="btn-primary" id="save-about-btn">Save About</button>
-        <span class="save-confirm" id="about-confirm"></span>
-      </div>
-    </div>
-
-    <!-- HERO TAB -->
-    <div class="tab-panel hidden" id="tab-hero">
-      <div class="panel-head"><h2>Homepage</h2></div>
-      <div class="form-block">
-        <div class="field">
-          <label>Small label at top <span class="optional">(e.g. "Writing &amp; Editing")</span></label>
-          <input type="text" id="hero-eyebrow" />
-        </div>
-        <div class="field">
-          <label>Main Headline <span class="optional">(wrap a word in &lt;em&gt;&lt;/em&gt; to italicise it)</span></label>
-          <input type="text" id="hero-headline" />
-        </div>
-        <div class="field">
-          <label>Subtitle</label>
-          <textarea id="hero-sub" rows="2"></textarea>
-        </div>
-        <div class="field">
-          <label>Button text</label>
-          <input type="text" id="hero-cta" placeholder="View Work" />
-        </div>
-        <button class="btn-primary" id="save-hero-btn">Save Homepage</button>
-        <span class="save-confirm" id="hero-confirm"></span>
-      </div>
-    </div>
-
-    <!-- CONTACT TAB -->
-    <div class="tab-panel hidden" id="tab-contact">
-      <div class="panel-head"><h2>Contact</h2></div>
-      <div class="form-block">
-        <div class="field">
-          <label>Heading</label>
-          <input type="text" id="contact-heading" placeholder="Let's work together." />
-        </div>
-        <div class="field">
-          <label>Body text</label>
-          <textarea id="contact-body" rows="3"></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Email address</label>
-            <input type="email" id="contact-email" placeholder="you@email.com" />
-          </div>
-          <div class="field">
-            <label>LinkedIn URL <span class="optional">(optional)</span></label>
-            <input type="url" id="contact-linkedin" placeholder="https://linkedin.com/in/…" />
-          </div>
-        </div>
-        <div class="field">
-          <label>Location <span class="optional">(optional)</span></label>
-          <input type="text" id="contact-location" placeholder="New York, NY" />
-        </div>
-        <button class="btn-primary" id="save-contact-btn">Save Contact</button>
-        <span class="save-confirm" id="contact-confirm"></span>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ADD / EDIT MODAL -->
-  <div id="modal-overlay" hidden>
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="modal-title">Add Piece</h3>
-        <button class="modal-close" id="modal-close-btn">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <div class="field-row">
-          <div class="field">
-            <label>Title <span class="req">*</span></label>
-            <input type="text" id="m-title" placeholder="Article or essay title" />
-          </div>
-          <div class="field" style="flex: 0 0 140px;">
-            <label>Year</label>
-            <input type="text" id="m-year" placeholder="2024" maxlength="4" />
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Client / Publication</label>
-            <input type="text" id="m-client" placeholder="Ford Foundation" />
-          </div>
-          <div class="field" style="flex: 0 0 200px;">
-            <label>Category</label>
-            <select id="m-category">
-              <option>Writing</option>
-              <option>Editing</option>
-              <option>Content Strategy</option>
-              <option>Annual Report</option>
-              <option>Grant Narrative</option>
-              <option>Op-Ed</option>
-              <option>Longform</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label>Description</label>
-          <textarea id="m-description" rows="3" placeholder="One or two sentences about this piece…"></textarea>
-        </div>
-
-        <!-- Toggle: Link vs File -->
-        <div class="attach-toggle">
-          <button class="toggle-opt active" id="toggle-link-btn" data-mode="link">🔗 Paste a Link</button>
-          <button class="toggle-opt" id="toggle-file-btn" data-mode="file">📄 Upload a File</button>
-        </div>
-
-        <div id="attach-link-area" class="field">
-          <label>URL</label>
-          <input type="url" id="m-link" placeholder="https://…" />
-        </div>
-
-        <div id="attach-file-area" hidden>
-          <div class="drop-zone" id="drop-zone">
-            <div class="drop-inner">
-              <span class="drop-icon">↑</span>
-              <p>Drag a file here, or <span class="drop-browse">click to browse</span></p>
-              <p class="drop-hint">PDF, Word, or any document</p>
-            </div>
-            <p class="drop-selected" id="drop-selected"></p>
-          </div>
-          <input type="file" id="m-file" style="display:none;" />
-          <p class="current-file" id="current-file-note"></p>
-        </div>
-      </div>
-
-      <div class="modal-foot">
-        <button class="btn-ghost" id="modal-cancel-btn">Cancel</button>
-        <button class="btn-primary" id="modal-save-btn">Save Piece</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <script src="admin.js"></script>
+    document.getElementById('login-btn').addEventListener('click', attempt);
+    document.getElementById('password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') attempt();
+    });
+  </script>
 </body>
 </html>
