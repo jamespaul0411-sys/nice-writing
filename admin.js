@@ -12,7 +12,7 @@ let pendingFile = null;
 // ── LOGOUT ────────────────────────────────────
 
 document.getElementById('logout-btn').addEventListener('click', () => {
-  sessionStorage.removeItem('nw-authed');
+  localStorage.removeItem('nw-pw');
   window.location.replace('admin.html');
 });
 

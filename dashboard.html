@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
   <!-- AUTH GUARD — runs before anything renders -->
-  <script>
-    if (sessionStorage.getItem('nw-authed') !== 'yes') {
+  <script src="config.js"></script>
+<script>
+  (function() {
+    var stored = localStorage.getItem('nw-pw');
+    if (stored === ADMIN_PASSWORD) return;
+    var attempt = window.prompt('Enter admin password:');
+    if (attempt === ADMIN_PASSWORD) {
+      localStorage.setItem('nw-pw', ADMIN_PASSWORD);
+    } else {
       window.location.replace('admin.html');
     }
-  </script>
+  })();
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — Nice Writing</title>
