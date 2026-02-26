@@ -10,47 +10,49 @@ let pendingFile = null;
 
 // ── AUTH ──────────────────────────────────────
 
-async function init() {
-  const { data, error } = await sb.auth.getUser();
-  if (!error && data?.user) {
+// ── AUTH ─────────────────────────────────────
+
+function init() {
+  if (sessionStorage.getItem('nw-authed') === 'yes') {
     showDashboard();
   } else {
-    await sb.auth.signOut();
     showLogin();
   }
 }
 
 function showLogin() {
-  document.getElementById('login-screen').style.setProperty('display', 'flex',  'important');
-  document.getElementById('dashboard').style.setProperty('display',    'none',  'important');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display    = 'none';
 }
 
-async function showDashboard() {
-  document.getElementById('login-screen').style.cssText = 'display:none!important';
-  const dash = document.getElementById('dashboard');
-  dash.style.cssText = '';
-  dash.style.display = 'block';
-  await loadAll();
+function showDashboard() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
+  loadAll();
 }
 
-document.getElementById('login-btn').addEventListener('click', async () => {
-  const email = document.getElementById('login-email').value.trim();
+document.getElementById('login-btn').addEventListener('click', () => {
   const pw    = document.getElementById('login-password').value;
   const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
-  if (!email || !pw) { errEl.textContent = 'Please enter your email and password.'; return; }
-  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { errEl.textContent = 'Incorrect email or password.'; }
-  else        showDashboard();
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('nw-authed', 'yes');
+    showDashboard();
+  } else {
+    errEl.textContent = 'Incorrect password.';
+    document.getElementById('login-password').value = '';
+  }
 });
 
-document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
-document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
 
-document.getElementById('logout-btn').addEventListener('click', async () => {
-  await sb.auth.signOut();
+document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.removeItem('nw-authed');
   showLogin();
 });
+
+init();
 
 // ── TABS ──────────────────────────────────────
 
