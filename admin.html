@@ -11,6 +11,12 @@
 </head>
 <body>
 
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('dashboard').style.cssText = 'display:none!important;visibility:hidden';
+  });
+</script>
+
   <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <div class="login-card">
@@ -31,7 +37,7 @@
   </div>
 
   <!-- DASHBOARD -->
- <div id="dashboard" style="display:none">
+<div id="dashboard" style="display:none!important;visibility:hidden">
 
     <!-- Top bar -->
     <header class="topbar">

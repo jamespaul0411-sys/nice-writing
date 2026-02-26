@@ -26,8 +26,10 @@ function showLogin() {
 }
 
 async function showDashboard() {
-  document.getElementById('login-screen').style.setProperty('display', 'none',  'important');
-  document.getElementById('dashboard').style.setProperty('display',    'block', 'important');
+  document.getElementById('login-screen').style.cssText = 'display:none!important';
+  const dash = document.getElementById('dashboard');
+  dash.style.cssText = '';
+  dash.style.display = 'block';
   await loadAll();
 }
 
