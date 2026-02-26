@@ -21,13 +21,13 @@ async function init() {
 }
 
 function showLogin() {
-  document.getElementById('login-screen').hidden = false;
-  document.getElementById('dashboard').hidden    = true;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display    = 'none';
 }
 
 async function showDashboard() {
-  document.getElementById('login-screen').hidden = true;
-  document.getElementById('dashboard').hidden    = false;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
   await loadAll();
 }
 
