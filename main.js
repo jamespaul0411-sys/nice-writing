@@ -41,10 +41,20 @@ const navLinksEl = document.getElementById('nav-links');
 
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 30);
+
+  // If user is at the very bottom of the page, force last section active
+  const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 10;
+
   let cur = '';
-  document.querySelectorAll('section[id]').forEach(s => {
-    if (window.scrollY >= s.offsetTop - 120) cur = s.id;
-  });
+  if (atBottom) {
+    const allSections = document.querySelectorAll('section[id]');
+    cur = allSections[allSections.length - 1].id;
+  } else {
+    document.querySelectorAll('section[id]').forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+    });
+  }
+
   navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${cur}`));
 }, { passive: true });
 
