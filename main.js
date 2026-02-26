@@ -39,6 +39,15 @@ const navLinks  = document.querySelectorAll('.nav-links a');
 const navToggle = document.getElementById('nav-toggle');
 const navLinksEl = document.getElementById('nav-links');
 
+// ── HERO PHOTO FADE ON SCROLL ─────────────────
+const heroBg = document.getElementById('hero-bg');
+
+window.addEventListener('scroll', () => {
+  const fadeOver = 400; // px scrolled until fully gone
+  const opacity  = Math.max(0, 1 - window.scrollY / fadeOver);
+  if (heroBg) heroBg.style.opacity = opacity;
+}, { passive: true });
+
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 30);
 
