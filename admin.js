@@ -36,7 +36,11 @@ async function loadAll() {
 // ── WORK ──────────────────────────────────────
 
 async function loadWork() {
-  const { data } = await sb.from('work_items').select('*').order('created_at', { ascending: false });
+  const { data } = await sb
+    .from('work_items')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false });
   workItems = data || [];
   renderWorkList();
 }
@@ -47,9 +51,11 @@ function renderWorkList() {
     el.innerHTML = '<div class="table-empty">No pieces yet — click <strong>+ Add Piece</strong> to get started.</div>';
     return;
   }
+
   el.innerHTML = workItems.map(item => `
-    <div class="work-row">
-      <div>
+    <div class="work-row" draggable="true" data-id="${item.id}">
+      <div class="drag-handle" title="Drag to reorder">⠿</div>
+      <div style="flex:1;min-width:0">
         <div class="work-row-title">${item.title}</div>
         <div class="work-row-meta">${[item.client, item.file_name ? '📄 ' + item.file_name : (item.link ? '🔗 Link' : '')].filter(Boolean).join(' · ')}</div>
       </div>
@@ -60,6 +66,8 @@ function renderWorkList() {
         <button class="btn-delete" onclick="deleteWork('${item.id}')">Delete</button>
       </div>
     </div>`).join('');
+
+  initDragToReorder();
 }
 
 // ── ADD / EDIT MODAL ──────────────────────────
@@ -217,9 +225,63 @@ async function deleteWork(id) {
   await loadWork();
 }
 
-window.openEditModal = openEditModal;
-window.deleteWork    = deleteWork;
+function initDragToReorder() {
+  const list  = document.getElementById('admin-work-list');
+  const rows  = () => [...list.querySelectorAll('.work-row')];
+  let dragged = null;
 
+  rows().forEach(row => {
+    row.addEventListener('dragstart', e => {
+      dragged = row;
+      setTimeout(() => row.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    row.addEventListener('dragend', () => {
+      dragged = null;
+      rows().forEach(r => r.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom'));
+      saveOrder();
+    });
+
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!dragged || dragged === row) return;
+      rows().forEach(r => r.classList.remove('drag-over-top', 'drag-over-bottom'));
+      const rect = row.getBoundingClientRect();
+      if (e.clientY < rect.top + rect.height / 2) {
+        row.classList.add('drag-over-top');
+      } else {
+        row.classList.add('drag-over-bottom');
+      }
+    });
+
+    row.addEventListener('dragleave', () => {
+      row.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragged || dragged === row) return;
+      const rect = row.getBoundingClientRect();
+      if (e.clientY < rect.top + rect.height / 2) {
+        list.insertBefore(dragged, row);
+      } else {
+        list.insertBefore(dragged, row.nextSibling);
+      }
+      rows().forEach(r => r.classList.remove('drag-over-top', 'drag-over-bottom'));
+    });
+  });
+}
+
+async function saveOrder() {
+  const rows = [...document.querySelectorAll('.work-row')];
+  await Promise.all(
+    rows.map((row, i) =>
+      sb.from('work_items').update({ sort_order: i }).eq('id', row.dataset.id)
+    )
+  );
+  workItems = rows.map(row => workItems.find(w => w.id === row.dataset.id)).filter(Boolean);
+}
 // ── SITE CONTENT ──────────────────────────────
 
 async function loadSiteContent() {

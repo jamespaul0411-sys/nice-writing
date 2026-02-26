@@ -456,7 +456,36 @@ body {
 }
 
 .current-file { font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+/* ── DRAG TO REORDER ─────────────────────── */
 
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+  cursor: grab;
+  color: #ccc;
+  font-size: 1.1rem;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.drag-handle:hover { color: #888; }
+.drag-handle:active { cursor: grabbing; }
+
+.work-row.dragging {
+  opacity: 0.4;
+  background: var(--off-white);
+}
+
+.work-row.drag-over-top {
+  border-top: 2px solid var(--black);
+}
+
+.work-row.drag-over-bottom {
+  border-bottom: 2px solid var(--black);
+}
 /* ── RESPONSIVE ──────────────────────────── */
 
 @media (max-width: 640px) {
