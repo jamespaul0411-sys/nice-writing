@@ -72,7 +72,8 @@ body {
   gap: 2rem;
 }
 
-.topbar-logo { height: 24px; filter: invert(1); flex-shrink: 0; }
+.topbar-logo { height: 24px; filter: invert(1); flex-shrink: 0; transition: opacity 0.2s; }
+.topbar-logo:hover { opacity: 0.6; }
 
 .tab-nav { display: flex; gap: 0; flex: 1; }
 
