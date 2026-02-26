@@ -5,6 +5,7 @@
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let workItems   = [];
+let workOrder   = [];
 let editingId   = null;
 let pendingFile = null;
 
@@ -68,14 +69,34 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ── LOAD ALL ──────────────────────────────────
 
 async function loadAll() {
-  await Promise.all([loadWork(), loadSiteContent()]);
+  await Promise.all([loadSiteContent(), loadWorkOrder()]);
+  await loadWork();
 }
 
 // ── WORK ──────────────────────────────────────
 
+async function loadWorkOrder() {
+  const { data } = await sb.from('site_content').select('value').eq('key', 'work_order');
+  const row = Array.isArray(data) ? data[0] : null;
+  const order = row && row.value && Array.isArray(row.value.order) ? row.value.order : [];
+  workOrder = order;
+}
+
 async function loadWork() {
   const { data } = await sb.from('work_items').select('*').order('created_at', { ascending: false });
   workItems = data || [];
+
+  if (workItems.length) {
+    const byId = new Map(workItems.map(w => [w.id, w]));
+    let order = Array.isArray(workOrder) ? workOrder.filter(id => byId.has(id)) : [];
+    const existingIds = new Set(order);
+    const newIds = workItems.map(w => w.id).filter(id => !existingIds.has(id));
+    order = [...newIds, ...order];
+    workOrder = order;
+    const orderMap = new Map(order.map((id, idx) => [id, idx]));
+    workItems.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
+  }
+
   renderWorkList();
 }
 
@@ -94,6 +115,10 @@ function renderWorkList() {
       <span class="work-row-year">${item.year || ''}</span>
       <span class="work-row-cat">${item.category || ''}</span>
       <div class="row-actions">
+        <div class="row-move-group">
+          <button class="btn-move" onclick="moveWork('${item.id}', -1)" title="Move up">↑</button>
+          <button class="btn-move" onclick="moveWork('${item.id}', 1)" title="Move down">↓</button>
+        </div>
         <button class="btn-edit"   onclick="openEditModal('${item.id}')">Edit</button>
         <button class="btn-delete" onclick="deleteWork('${item.id}')">Delete</button>
       </div>
@@ -253,6 +278,9 @@ async function saveWork() {
   if (error) { alert('Error saving: ' + error.message); return; }
   closeModal();
   await loadWork();
+  if (!editingId) {
+    await saveWorkOrder();
+  }
 }
 
 // ── DELETE WORK ───────────────────────────────
@@ -263,8 +291,31 @@ async function deleteWork(id) {
   await loadWork();
 }
 
+async function moveWork(id, direction) {
+  const idx = workItems.findIndex(w => w.id === id);
+  if (idx === -1) return;
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= workItems.length) return;
+  const [moved] = workItems.splice(idx, 1);
+  workItems.splice(newIdx, 0, moved);
+  workOrder = workItems.map(w => w.id);
+  renderWorkList();
+  await saveWorkOrder();
+}
+
+async function saveWorkOrder() {
+  if (!workItems.length) {
+    workOrder = [];
+    await upsertContent('work_order', { order: [] });
+    return;
+  }
+  workOrder = workItems.map(w => w.id);
+  await upsertContent('work_order', { order: workOrder });
+}
+
 window.openEditModal = openEditModal;
 window.deleteWork    = deleteWork;
+window.moveWork      = moveWork;
 
 // ── SITE CONTENT ──────────────────────────────
 

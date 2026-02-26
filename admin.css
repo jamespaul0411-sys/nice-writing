@@ -182,7 +182,32 @@ body {
   white-space: nowrap;
 }
 
-.row-actions { display: flex; gap: 0.5rem; }
+.row-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+.row-move-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.btn-move {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: #f6f5f2;
+  color: #555;
+  line-height: 1;
+}
+
+.btn-move:hover {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
 
 .btn-edit, .btn-delete {
   font-family: var(--sans);
