@@ -356,5 +356,3 @@ document.getElementById('save-contact-btn').addEventListener('click', async () =
   flashConfirm('contact-confirm');
 });
 
-// ── START ──────────────────────────────────────
-init();
