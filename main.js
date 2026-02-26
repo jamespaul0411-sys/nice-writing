@@ -23,7 +23,7 @@ const DEFAULTS = {
     tags: ['Annual Reports','Grant Narratives','Impact Stories','Newsletters','Op-Eds','Editing']
   },
   contact: {
-    heading: 'Let\'s work\ntogether.',
+    heading: 'Available for Work.',
     sub: 'Available for freelance writing and editing projects with nonprofits, foundations, and mission-driven organizations globally.',
     links: [
       { label: 'Email',    value: 'hello@nicewriting.co', href: 'mailto:hello@nicewriting.co' },
