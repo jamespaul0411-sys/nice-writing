@@ -1,0 +1,18 @@
+{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/dashboard", "dest": "/dashboard.html" }
+  ]
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Nice Writing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="config.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #f6f5f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border: 1px solid #e4e2dc;
+      padding: 2.5rem;
+      border-radius: 12px;
+    }
+    .logo { height: 28px; margin-bottom: 1.75rem; display: block; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; }
+    p { font-size: 0.88rem; color: #8a8880; margin-bottom: 1.75rem; }
+    label { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #555; margin-bottom: 0.4rem; }
+    input {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #e4e2dc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #0c0c0c; }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #0c0c0c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 0.25rem;
+    }
+    button:hover { background: #333; }
+    .error { font-size: 0.82rem; color: #c94040; min-height: 1.2rem; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="assets/logo.png" alt="Nice Writing" class="logo" />
+    <h1>Admin Login</h1>
+    <p>Sign in to manage your portfolio.</p>
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="••••••••" />
+    <div class="error" id="error"></div>
+    <button id="login-btn">Sign In</button>
+  </div>
+
+  <script src="config.js"></script>
+<script>
+  // If already logged in, skip straight to dashboard
+  if (localStorage.getItem('nw-pw') === ADMIN_PASSWORD) {
+    window.location.replace('/dashboard');
+  }
+
+  function attempt() {
+    const val = document.getElementById('password').value;
+    if (val === ADMIN_PASSWORD) {
+      localStorage.setItem('nw-pw', ADMIN_PASSWORD);
+      window.location.replace('dashboard.html');
+    } else {
+      document.getElementById('error').textContent = 'Incorrect password.';
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  }
+
+  document.getElementById('login-btn').addEventListener('click', attempt);
+  document.getElementById('password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') attempt();
+  });
+</script>
+</body>
+</html>
