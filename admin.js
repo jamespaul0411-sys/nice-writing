@@ -11,11 +11,11 @@ let pendingFile = null;
 // ── AUTH ──────────────────────────────────────
 
 async function init() {
-  try {
-    const { data, error } = await sb.auth.getSession();
-    if (!error && data?.session) showDashboard();
-    else showLogin();
-  } catch(_) {
+  const { data, error } = await sb.auth.getUser();
+  if (!error && data?.user) {
+    showDashboard();
+  } else {
+    await sb.auth.signOut();
     showLogin();
   }
 }
