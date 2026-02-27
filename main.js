@@ -198,6 +198,23 @@ const revealObserver = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+// ── ABOUT HEADSHOT FADE ───────────────────────
+const aboutLeft = document.querySelector('.about-left');
+if (aboutLeft) {
+  function updateAboutBg() {
+    const rect = aboutLeft.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // How far into the viewport the element is (0 = just entering bottom, 1 = fully visible)
+    const enterProgress = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.6)));
+    // How far past the viewport the element is (1 = still visible, 0 = scrolled away)
+    const exitProgress = Math.min(1, Math.max(0, (rect.bottom) / (vh * 0.4)));
+    const opacity = Math.min(enterProgress, exitProgress);
+    aboutLeft.style.setProperty('--bg-opacity', opacity);
+  }
+  window.addEventListener('scroll', updateAboutBg, { passive: true });
+  updateAboutBg();
+}
+
 // ── LOAD FROM SUPABASE ────────────────────────
 
 async function loadSiteContent() {
