@@ -4,8 +4,6 @@
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let workOrder = null;
-
 // Fallback content shown if Supabase is empty
 const DEFAULTS = {
   hero: {
@@ -221,8 +219,6 @@ async function loadSiteContent() {
   try {
     const { data } = await sb.from('site_content').select('key, value');
     const map = Object.fromEntries((data || []).map(r => [r.key, r.value]));
-    const wo = map.work_order && map.work_order.order;
-    workOrder = Array.isArray(wo) ? wo : null;
     renderHero(map.hero || DEFAULTS.hero);
     renderAbout(map.about || DEFAULTS.about);
     renderContact(map.contact || DEFAULTS.contact);
@@ -235,17 +231,12 @@ async function loadSiteContent() {
 
 async function loadWork() {
   try {
-    const { data } = await sb.from('work_items').select('*').order('created_at', { ascending: false });
-    let items = data || [];
-    if (Array.isArray(workOrder) && workOrder.length && items.length) {
-      const byId = new Map(items.map(w => [w.id, w]));
-      const orderIds = workOrder.filter(id => byId.has(id));
-      const seen = new Set(orderIds);
-      const remaining = items.filter(w => !seen.has(w.id));
-      const ordered = [...orderIds.map(id => byId.get(id)), ...remaining];
-      items = ordered;
-    }
-    renderWork(items);
+    const { data } = await sb
+      .from('work_items')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+    renderWork(data || []);
   } catch (_) {
     document.getElementById('work-list').innerHTML = '<div class="loading-row">Could not load work.</div>';
   }
