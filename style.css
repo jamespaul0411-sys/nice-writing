@@ -578,6 +578,7 @@ footer p { font-size: 0.73rem; color: var(--muted); letter-spacing: 0.06em; }
 
 @media (max-width: 900px) {
   .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 3.5rem; }
+  #about { padding: 6rem 5vw; }
   .about-left { min-height: 320px; padding: 2rem; }
   .contact-right { margin-top: 0; }
 }
